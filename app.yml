@@ -25,6 +25,6 @@ spec:
     spec:
       containers:
       - name: tomcat
-        image: vinaydockersince1980/vinaydockerrepo:webcalc-newnumber
+        image: 8639628479/tomcatdocker:tomcatdevops
         ports:
         - containerPort: 8080
