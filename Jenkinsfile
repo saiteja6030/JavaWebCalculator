@@ -3,7 +3,7 @@ node{
  	{
  		sshagent(['private'])
 			{
-			git branch: 'kubernetives', url: 'https://github.com/saiteja6030/JavaWebCalculator.git'
+			git branch: 'kubernatives', url: 'https://github.com/saiteja6030/JavaWebCalculator.git'
 			}
 	}
 		
