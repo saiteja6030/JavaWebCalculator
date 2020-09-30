@@ -1,72 +1,20 @@
 node{
 	stage('SCM Checkout')
  	{
-       git branch: 'master', url: 'https://github.com/saiteja6030/JavaWebCalculator.git'
-	}
-	stage('Mvn Package')
-	{
-    	def mvnHome = tool name: 'maven-3', type: 'maven'
-    	def mvnCMD = "${mvnHome}/bin/mvn"
-    	sh "${mvnCMD} clean package"
-   	}
-	stage('Build Docker Image')
-	{
-	sh 'sudo service docker start'
-    	sh 'docker build -t 8639628479/tomcatdocker:tomcatdevops .'
-	}
-	
-	stage('Push Docker Image')
-	{
-    	withCredentials([string(credentialsId: 'dockerpwd', variable: 'dockerHubPwd')]) 
-    	{
-        	sh "docker login -u 8639628479 -p ${dockerHubPwd}"
-    	}
-    	sh 'docker push 8639628479/tomcatdocker:tomcatdevops'
-	}
-	
-	
-	stage('Remove Previous container')
-	{
-		try
-		{
-			def dockerstart = ' sudo service docker start'
-			def dockerRm = 'docker rm -f tomcatcontainer'
-			sshagent(['private'])
+ 		sshagent(['private'])
 			{
-				sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.32 ${dockerstart}"
-				sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.32 ${dockerRm}"
+			git branch: 'kubernetives', url: 'https://github.com/saiteja6030/JavaWebCalculator.git'
 			}
-		}
-		catch(error)
-		{
-		//  do nothing if there is an exception
-		}
 	}
-	
-	stage('Remove Previous Image')
+		
+	stage('Execute kubectl commands')
 	{
 		
-		try
+		def K8start = 'kubectl apply -f app.yml'
+		sshagent(['private'])
 		{
-			def dockerRm = 'docker rmi -f 8639628479/tomcatdocker:tomcatdevops'
-			sshagent(['private'])
-			{
-				sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.32 ${dockerRm}"
-			}
+			sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.32 ${K8start}"
 		}
-		catch(error)
-		{
-		//  do nothing if there is an exception
-		}
-	}	
-	stage('Deploy to Dev Environment')
-	{
-   		def dockerRun = 'docker run -d --name tomcatcontainer -p 8080:8080 8639628479/tomcatdocker:tomcatdevops'
-    	sshagent(['private']) 
-    	{
-    		sh "ssh -o StrictHostKeyChecking=no ec2-user@172.31.38.32 ${dockerRun}"
-   		}
-
- 	}
+	}
 
 }
