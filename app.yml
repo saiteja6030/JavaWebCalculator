@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-tomcat-service
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+  selector:
+    app: app-tomcat
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-tomcat-deployment
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: app-tomcat
+  template:
+    metadata:
+      labels:
+        app: app-tomcat
+    spec:
+      containers:
+      - name: tomcat
+        image: vinaydockersince1980/vinaydockerrepo:webcalc-newnumber
+        ports:
+        - containerPort: 8080
